@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<TITLE>Adding geocode of another Access Point to the database</TITLE>
+<!--JavaScript part of code-->
+<script>
+    function myFunction()
+    {
+    	if(document.getElementById('r1').checked)
+    	{
+    		//alert("Please give all the details required for this Access Point");
+    		document.getElementById('F1').style.display='block';
+    		document.getElementById('F2').style.display='none';
+    		document.getElementById('r4').style.display='block';
+    	}
+    	else if(document.getElementById('r2').checked)
+    	{
+    		//alert("Please give all the details required for this slot of an Access Point");
+    		document.getElementById('F2').style.display='block';
+    		document.getElementById('F1').style.display='none';
+    		document.getElementById('r4').style.display='block';
+    	}
+    	else
+    	{
+    		alert("Please choose an option first");
+    	}
+    }
+</script>
+</HEAD>
+<BODY bgcolor='black'>
+  <h1 align='center' style='color:white;'> Welcome! </h1>
+  <h2 align='center' style='color:white;'> Please fill the details below to add an access point to the location </h2>
+  <form style='color:white ' >
+  <!--This is the form starting where info for every acess point will be saved-->
+  <fieldset  style=' padding:50px margin:50px '>
+    <legend style='font-size:30px ' align='center'>Adding to Database:</legend>
+    <br><br>
+    <font-size='25px' >Please choose one option to recieve the further form and add information to the database : </font>
+    <br>
+    <input type='radio' id='r1' name='adding' value='1' > Access Point (A whole new space for this facility) <br>
+    <input type='radio' id='r2' name='adding' value='2' > Locker (one slot to an Access Point)
+    <br><br>
+    <button type='button' id='r3' onClick='myFunction()'> NEXT  </button>
+  </fieldset>
+  <!--For Access Point Database-->
+  <fieldset id='F1' style=' display:none'>
+  <legend style='font-size:30px ' align='center'>Adding to Access Point Database:</legend>
+  <br><br>
+  Geocode Details:
+  <br><br>
+  </fieldset>
+  <!--For Lockers Database-->
+  <fieldset id='F2' style=' display:none'>
+  <legend style='font-size:30px ' align='center'>Adding to Lockers Database:</legend>
+  <br><br>
+  Geocode Details: Slot No. :
+  <br><br>
+  </fieldset> 
+  <button align='center' type='button' id='r4' onClick='Further()' style='padding:10px; margin:20px; display:none' > Submit  </button>
+  </form>
+</BODY>
+</HTML>
