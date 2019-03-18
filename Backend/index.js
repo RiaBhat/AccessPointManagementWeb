@@ -49,18 +49,15 @@ app.post('/show', function (req, res) {
 
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
-  where.is('4 yawkey way boston ma', function(err, result) {
-  if (result) {
-    console.log('Lat: ' + result.get('lat'));
-    console.log('Lng: ' + result.get('lng'));
-  }
-});
+  
+
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
 	res.redirect('/');
 });
 app.post('/lockerList', function (req, res) {
   
+
 });
 app.get('/lockerList',function(req,res){
 	res.redirect('/');
@@ -68,7 +65,7 @@ app.get('/lockerList',function(req,res){
 
 
 // to connect and save data to mongo db
-mongoose.connect('');
+//mongoose.connect('');
 
 // port assigned to listen to the user's request
 app.listen(process.env.port || 3000, function () {
