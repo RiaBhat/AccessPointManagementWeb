@@ -6,24 +6,24 @@
 <script>
     function myFunction()
     {
-    	if(document.getElementById('r1').checked)
-    	{
-    		//alert("Please give all the details required for this Access Point");
-    		document.getElementById('F1').style.display='block';
-    		document.getElementById('F2').style.display='none';
-    		document.getElementById('r4').style.display='block';
-    	}
-    	else if(document.getElementById('r2').checked)
-    	{
-    		//alert("Please give all the details required for this slot of an Access Point");
-    		document.getElementById('F2').style.display='block';
-    		document.getElementById('F1').style.display='none';
-    		document.getElementById('r4').style.display='block';
-    	}
-    	else
-    	{
-    		alert("Please choose an option first");
-    	}
+      if(document.getElementById('r1').checked)
+      {
+        //alert("Please give all the details required for this Access Point");
+        document.getElementById('F1').style.display='block';
+        document.getElementById('F2').style.display='none';
+        
+      }
+      else if(document.getElementById('r2').checked)
+      {
+        //alert("Please give all the details required for this slot of an Access Point");
+        document.getElementById('F2').style.display='block';
+        document.getElementById('F1').style.display='none';
+        
+      }
+      else
+      {
+        alert("Please choose an option first");
+      }
     }
 </script>
 </HEAD>
@@ -48,15 +48,24 @@
   <br><br>
   Geocode Details:
   <br><br>
+  Address of the Access Point [street no. , city, state, Country, zip code]-
+  <br>
+  <input type='text' id='b1' >
+  <button align='center' name='point' type='submit' id='r4' formaction='/accessList' style='padding:10px; margin:20px; ' > Submit  </button>
   </fieldset>
   <!--For Lockers Database-->
   <fieldset id='F2' style=' display:none'>
   <legend style='font-size:30px ' align='center'>Adding to Lockers Database:</legend>
   <br><br>
-  Geocode Details: Slot No. :
+  Geocode Details: <br><br>
+  Address of the Access Point [street no. , city, state, Country, zip code]-
+  <br>
+  <input type='text' id='b2' >
   <br><br>
+  Number of lockers added-<br>
+  <input type='number' id='b3'>
+  <button align='center' name='loc' type='submit' id='r5' formaction='/lockerList' style='padding:10px; margin:20px; ' > Submit  </button>
   </fieldset> 
-  <button align='center' type='button' id='r4' onClick='Further()' style='padding:10px; margin:20px; display:none' > Submit  </button>
   </form>
 </BODY>
 </HTML>
