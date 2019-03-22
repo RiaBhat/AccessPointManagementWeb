@@ -5,11 +5,26 @@ const app = express();
 //to connect to mongodb
 const mongoose = require('mongoose');
 //to connect to geocode api and find lat and lang
-var where = require('node-where');
-
+var NodeGeocoder = require('node-geocoder');
+// for geocoding
+var geocoder = NodeGeocoder({
+  provider: 'opencage',
+  apiKey: '54383ddcc3734cab8ce0e83f911be831'
+});
+/*
+* Reverse Geocoding
+geocoder.geocode('37.4396, -122.1864', function(err, res) {
+  console.log(res);
+});
+*Forward Geocoding
+geocoder.geocode('29 champs elysée paris', function(err, res) {
+  console.log(res);
+});
+*/
 
 // for getting data from post requests
 const bodyParser = require('body-parser');
+
 // to set the response to a html web page
 app.set('view engine', 'ejs')
 
@@ -49,25 +64,33 @@ app.post('/show', function (req, res) {
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
-
+  geocoder.geocode(req.body.Aname, function(err, res) {
+  console.log(res);
+  });
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
 	// that result show case or code to be shown to user
+  res.redirect('/');
 });
 app.post('/lockerList', function (req, res) {
   //forward geocoding needs to be done
-
+  // need to find the geocode of address and add the no. of lockers to previous numbers in it
+  geocoder.geocode(req.body.Lname, function(err, res) {
+  console.log(res);
+  });
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
+  res.redirect('/');
 });
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address to geocode and search nearest geocodes and return addresses as result
-
+  
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
+  res.redirect('/');
 });
 
 // to connect and save data to mongo db
