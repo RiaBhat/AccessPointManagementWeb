@@ -37,8 +37,7 @@ app.post('/', function (req, res) {
 // when request made for add page from home page using button
 app.post('/add', function (req, res) {
   console.log('Moved to add page');
-  //res.redirect('/');->to again show same page
-  //move to add page
+   //move to add page
   res.render('addAccessPoint1');
 });
 //when request made for show page from home page using button
@@ -49,20 +48,27 @@ app.post('/show', function (req, res) {
 
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
-  
+  // forward geocoding needs to be done
 
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
-	res.redirect('/');
+	// that result show case or code to be shown to user
 });
 app.post('/lockerList', function (req, res) {
-  
+  //forward geocoding needs to be done
 
 });
 app.get('/lockerList',function(req,res){
-	res.redirect('/');
+	// that result show case or code to be shown to user
 });
+app.post('/search', function (req, res) { // code that will execute in background when address submitted
+  // backward geocoding needs to be done
+  //convert address to geocode and search nearest geocodes and return addresses as result
 
+});
+app.get('/search',function(req,res){  // home page showed to user as get request
+  // that result show case or code to be shown to user
+});
 
 // to connect and save data to mongo db
 //mongoose.connect('');
