@@ -7,11 +7,22 @@ const mongoose = require('mongoose');
 //to connect to geocode api and find lat and lang
 var NodeGeocoder = require('node-geocoder');
 // for geocoding
+var options = {
+  provider: 'google',
+
+  // Optional depending on the providers
+  httpAdapter: 'https', // Default
+  apiKey: '54383ddcc3734cab8ce0e83f911be831', // for Mapquest, OpenCage, Google Premier
+  formatter: null         // 'gpx', 'string', ...
+};
+
+var geocoder = NodeGeocoder(options);
+/*
 var geocoder = NodeGeocoder({
   provider: 'opencage',
   apiKey: '54383ddcc3734cab8ce0e83f911be831'
 });
-/*
+
 * Reverse Geocoding
 geocoder.geocode('37.4396, -122.1864', function(err, res) {
   console.log(res);
@@ -70,7 +81,7 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
 	// that result show case or code to be shown to user
-  res.redirect('/');
+  //res.redirect('/');
 });
 app.post('/lockerList', function (req, res) {
   //forward geocoding needs to be done
@@ -81,16 +92,16 @@ app.post('/lockerList', function (req, res) {
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
-  res.redirect('/');
+  //res.redirect('/');
 });
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address to geocode and search nearest geocodes and return addresses as result
-  
+
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
-  res.redirect('/');
+  //res.redirect('/');
 });
 
 // to connect and save data to mongo db
