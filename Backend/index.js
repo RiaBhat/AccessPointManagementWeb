@@ -27,9 +27,18 @@ var geocoder = NodeGeocoder({
 geocoder.geocode('37.4396, -122.1864', function(err, res) {
   console.log(res);
 });
+0r
+geocoder.reverse({lat:45.767, lon:4.833}, function(err, res) {
+  console.log(res);
+});
 *Forward Geocoding
 geocoder.geocode('29 champs elysée paris', function(err, res) {
   console.log(res);
+  or
+  geocoder.geocode({address: '29 champs elysée', country: 'France', zipcode: '75008'}, function(err, res) {
+  console.log(res);
+});
+
 });
 */
 
@@ -78,6 +87,9 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
   //let Aname = request.body.Aname;
   geocoder.geocode('29 champs elysée paris', function(err, res) { //request.body.Aname  '29 champs elysée paris'
   console.log(res);
+  var lat = res.latitude; // to get lattitude of address
+   var lon = res.longitude; // to get longitude of address
+  console.log('lat : '+ lat+' long: '+lon);  
   });
 });
 app.post('/nice', function (req, res) {
@@ -104,9 +116,15 @@ app.post('/search', function (req, res) { // code that will execute in backgroun
   // backward geocoding needs to be done
   //convert address to geocode and search nearest geocodes and return addresses as result
   // reverse
-  geocoder.geocode('37.4396, -122.1864', function(err, res) {
-  console.log(res);
+  //geocoder.geocode('37.4396, -122.1864', function(err, res) {
+  //console.log(res);
+  //});
+  geocoder.reverse({lat:45.767, lon:4.833}, function(err, res) {
+     
+    console.log(res);
+    
   });
+
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
