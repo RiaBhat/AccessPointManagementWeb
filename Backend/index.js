@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 var NodeGeocoder = require('node-geocoder');
 // for geocoding
 var options = {
-  provider: 'google',
+  provider: 'opencage',
 
   // Optional depending on the providers
   httpAdapter: 'https', // Default
@@ -75,8 +75,9 @@ app.post('/show', function (req, res) {
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
-  geocoder.geocode(req.body.Aname, function(err, res) {
+  geocoder.geocode('29 champs elysée paris', function(err, res) { //req.body.Aname
   console.log(res);
+  
   });
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
