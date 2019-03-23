@@ -75,10 +75,15 @@ app.post('/show', function (req, res) {
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
-  geocoder.geocode('29 champs elysée paris', function(err, res) { //req.body.Aname
+  //let Aname = request.body.Aname;
+  geocoder.geocode('29 champs elysée paris', function(err, res) { //request.body.Aname  '29 champs elysée paris'
   console.log(res);
-  
   });
+});
+app.post('/nice', function (req, res) {
+  // this is what will be done when form of /addAP will be submitted
+  let Aname = request.body.Aname;
+  res.send(Aname);
 });
 app.get('/accessList',function(req,res){  // home page showed to user as get request
 	// that result show case or code to be shown to user
@@ -98,7 +103,10 @@ app.get('/lockerList',function(req,res){
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address to geocode and search nearest geocodes and return addresses as result
-
+  // reverse
+  geocoder.geocode('37.4396, -122.1864', function(err, res) {
+  console.log(res);
+  });
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
