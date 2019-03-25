@@ -8,12 +8,12 @@ const mongoose = require('mongoose');
 var NodeGeocoder = require('node-geocoder');
 // for geocoding
 var options = {
-  provider: 'opencage',
+  provider: 'opencage',//google
 
   // Optional depending on the providers
   httpAdapter: 'https', // Default
   apiKey: '54383ddcc3734cab8ce0e83f911be831', // for Mapquest, OpenCage, Google Premier
-  formatter: null         // 'gpx', 'string', ...
+  formatter: null        // 'gpx', 'string', ...
 };
 
 var geocoder = NodeGeocoder(options);
@@ -85,11 +85,12 @@ app.post('/show', function (req, res) {
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
   //let Aname = request.body.Aname;
-  geocoder.geocode('29 champs elysée paris', function(err, res) { //request.body.Aname  '29 champs elysée paris'
+  geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
   console.log(res);
-  var lat = res.latitude; // to get lattitude of address
-   var lon = res.longitude; // to get longitude of address
+  const lat = res[0].latitude; // to get lattitude of address
+   var lon = res[0].longitude; // to get longitude of address
   console.log('lat : '+ lat+' long: '+lon);  
+
   });
 });
 app.post('/nice', function (req, res) {
