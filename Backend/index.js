@@ -116,11 +116,12 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
   //let Aname = request.body.Aname;
   var str = req.body.Aname;
   var no = req.body.Nname;
+  var x= parseInt(no,10);
   geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
   console.log(res);
-  const lat = res[0].latitude; // to get lattitude of address
+  var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
-  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no);  
+  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);  
 
   // now we will save add, lat and lon to databse
   //schema
@@ -137,7 +138,7 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
     address:str,
     latt:lat,
     lonn:lon,
-    lock:no
+    lock:x
   }).save(function(err){
   if(err)
   throw err;
