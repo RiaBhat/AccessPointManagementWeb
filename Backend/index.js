@@ -2,8 +2,26 @@
 const express = require('express');
 //create express app
 const app = express();
+
+// for reading input
+var readline = require('readline-sync');
+
+// for finding distances
+var distance = require('google-distance');
+
 //to connect to mongodb
 const mongoose = require('mongoose');
+mongoose.connect('mongodb://lockers1:lockers1@ds125486.mlab.com:25486/accesspoints',{useNewUrlParser:true});
+var db= mongoose.connection;
+db.on('error',function(err){
+  if(err)
+  console.log(err+' connection err');
+
+});
+db.once('open',function(){
+  console.log('database connected');
+});
+
 //to connect to geocode api and find lat and lang
 var NodeGeocoder = require('node-geocoder');
 // for geocoding
@@ -39,6 +57,17 @@ geocoder.geocode('29 champs elysée paris', function(err, res) {
   console.log(res);
 });
 
+});
+
+*for distance between two addresses
+distance.get(
+  {
+    origin: 'San Francisco, CA',
+    destination: 'San Diego, CA'
+  },
+  function(err, data) {
+    if (err) return console.log(err);
+    console.log(data);
 });
 */
 
@@ -85,11 +114,35 @@ app.post('/show', function (req, res) {
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
   //let Aname = request.body.Aname;
+  var str = req.body.Aname;
+  var no = req.body.Nname;
   geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
   console.log(res);
   const lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
-  console.log('lat : '+ lat+' long: '+lon);  
+  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no);  
+
+  // now we will save add, lat and lon to databse
+  //schema
+  var codeSchema = new mongoose.Schema({
+    address:String,
+    latt : Number,
+    lonn : Number,
+    lock : Number
+  });
+  // model
+  var geo = mongoose.model('geo', codeSchema);
+  // object
+  var item = geo ({
+    address:str,
+    latt:lat,
+    lonn:lon,
+    lock:no
+  }).save(function(err){
+  if(err)
+  throw err;
+  console.log('item saved');
+  });
 
   });
 });
@@ -107,7 +160,9 @@ app.post('/lockerList', function (req, res) {
   // need to find the geocode of address and add the no. of lockers to previous numbers in it
   geocoder.geocode(req.body.Lname, function(err, res) {
   console.log(res);
-  });
+  const lat = res[0].latitude; // to get lattitude of address
+   var lon = res[0].longitude; // to get longitude of address
+});
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
@@ -115,17 +170,25 @@ app.get('/lockerList',function(req,res){
 });
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
-  //convert address to geocode and search nearest geocodes and return addresses as result
-  // reverse
+  //convert address to geocode 
+  geocoder.geocode(req.body.fName, function(err, res) {
+  console.log(res);
+  const lat = res[0].latitude; // to get lattitude of address
+   var lon = res[0].longitude; // to get longitude of address
+
+   // search nearest geocodes and return addresses as result
+
+
+   // reverse
+   geocoder.reverse(lat,lon , function(err, res) { //fName
+    console.log(res);
+  });
+
+  });
+  
   //geocoder.geocode('37.4396, -122.1864', function(err, res) {
   //console.log(res);
   //});
-  geocoder.reverse({lat:45.767, lon:4.833}, function(err, res) {
-     
-    console.log(res);
-    
-  });
-
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
@@ -133,7 +196,9 @@ app.get('/search',function(req,res){  // home page showed to user as get request
 });
 
 // to connect and save data to mongo db
-//mongoose.connect('');
+//Username and password of the user is lockers1 
+//form user schemas and save them to collections in database
+
 
 // port assigned to listen to the user's request
 app.listen(process.env.port || 3000, function () {
