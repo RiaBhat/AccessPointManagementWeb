@@ -2,6 +2,7 @@
 const express = require('express');
 //create express app
 const app = express();
+const Promise = require('bluebird');//bluebird is for promise
 
 // for reading input
 var readline = require('readline-sync');
@@ -21,6 +22,17 @@ db.on('error',function(err){
 db.once('open',function(){
   console.log('database connected');
 });
+// for saving to db
+// now we will save add, lat and lon to databse
+  //schema
+  var codeSchema = new mongoose.Schema({
+    address:String,
+    latt : Number,
+    lonn : Number,
+    lock : Number
+  });
+  // model
+  var geo = mongoose.model('geo', codeSchema);
 
 //to connect to geocode api and find lat and lang
 var NodeGeocoder = require('node-geocoder');
@@ -73,6 +85,7 @@ distance.get(
 
 // for getting data from post requests
 const bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
 
 // to set the response to a html web page
 app.set('view engine', 'ejs')
@@ -122,28 +135,31 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
   var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
   console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);  
-
-  // now we will save add, lat and lon to databse
-  //schema
-  var codeSchema = new mongoose.Schema({
-    address:String,
-    latt : Number,
-    lonn : Number,
-    lock : Number
-  });
-  // model
-  var geo = mongoose.model('geo', codeSchema);
   // object
-  var item = geo ({
+  //now we will check in db if the access point already exists
+    var item = geo ({
     address:str,
     latt:lat,
     lonn:lon,
     lock:x
-  }).save(function(err){
-  if(err)
-  throw err;
-  console.log('item saved');
   });
+
+   geo.findOne({
+      address:str
+    }).then(user=>{
+      if(user)
+      {
+        // access point already exists hence no change made in db
+        console.log('This access point exists, we will not add it again');
+      }
+      else{
+        //No such access point exists , hence access point saved
+        new geo(item)
+        .save()
+        .then(console.log('access point saved'));
+      }
+    });
+    //response.render('order');
 
   });
 });
@@ -161,8 +177,34 @@ app.post('/lockerList', function (req, res) {
   // need to find the geocode of address and add the no. of lockers to previous numbers in it
   geocoder.geocode(req.body.Lname, function(err, res) {
   console.log(res);
-  const lat = res[0].latitude; // to get lattitude of address
+   var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
+   var str = req.body.Lname;// address of existing access point
+  var no = req.body.Nname1;// number of lockers to be added
+  var x= parseInt(no,10);// int of number
+  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+  //now we will check in db if the access point already exists
+    var item = geo ({
+    address:str,
+    latt:lat,
+    lonn:lon,
+    lock:x
+  });
+
+   geo.findOne({
+      address:str
+    }).then(user=>{
+      if(user)
+      {
+        // access point already exists hence no. of lockers will be changed in db 
+        console.log('This access point exists, we will update the number of lockers');
+      }
+      else{
+        //No such access point exists , hence no change in db will me made.
+        console.log('No such access point exists , hence no change in db will me made.');
+      }
+    });
+
 });
 });
 app.get('/lockerList',function(req,res){
@@ -171,15 +213,42 @@ app.get('/lockerList',function(req,res){
 });
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
-  //convert address to geocode 
+  //convert address provided by user to geocode 
   geocoder.geocode(req.body.fName, function(err, res) {
   console.log(res);
-  const lat = res[0].latitude; // to get lattitude of address
+   var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
+   var str = req.body.fName; // to get the address of user (query address)
+   console.log('lat= '+lat+' lon= '+lon+' address= '+str);
+    
+   // search nearest geocodes from database and return addresses as result
+   /*
+    npm install google-distance
+   * for address
+   var distance = require('google-distance');
 
-   // search nearest geocodes and return addresses as result
-
-
+   distance.get(
+  {
+    origin: 'San Francisco, CA',
+    destination: 'San Diego, CA'
+  },
+  function(err, data) {
+    if (err) return console.log(err);
+    console.log(data);
+   });
+   * for lattitude and longitude
+   distance.get(
+{
+  index: 1,
+  origin: '37.772886,-122.423771',
+  destination: '37.871601,-122.269104'
+},
+function(err, data) {
+  if (err) return console.log(err);
+  console.log(data);
+});
+   */
+   //find the geo code of query address, find nearest access points, return them
    // reverse
    geocoder.reverse(lat,lon , function(err, res) { //fName
     console.log(res);
