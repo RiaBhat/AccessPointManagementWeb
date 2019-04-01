@@ -132,35 +132,57 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
   var x= parseInt(no,10);
   geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
   console.log(res);
+  console.log("********************");
   var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
-  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);  
+  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+  console.log("%%%%%%%%%%%%%%%%");  
   // object
   //now we will check in db if the access point already exists
-    var item = geo ({
-    address:str,
-    latt:lat,
-    lonn:lon,
-    lock:x
-  });
 
-   geo.findOne({
-      address:str
-    }).then(user=>{
-      if(user)
-      {
+   // geo.findOne({
+   //    latt:lat,
+   //    lann:lon
+   //  }).then(user=>{
+   //    if(user)
+   //    {
+   //      // access point already exists hence no change made in db
+   //      console.log('This access point exists, we will not add it again');
+   //    }
+   //    else{
+   //      //No such access point exists , hence access point saved
+   //      item.save()
+   //      .then(console.log('access point saved'));
+   //    }
+   //  });
+    geo.find({address:str
+    },function(err,final){
+      if(err)
+        console.log(err);
+      console.log(final);
+      if(final.length>0){
         // access point already exists hence no change made in db
         console.log('This access point exists, we will not add it again');
       }
       else{
-        //No such access point exists , hence access point saved
-        new geo(item)
-        .save()
-        .then(console.log('access point saved'));
+        var item = new geo ({
+        address:str,
+        latt:lat,
+        lonn:lon,
+        lock:x
+        });
+        item.save(function(err,save){
+          if(err)
+            console.log(err);
+            //No such access point exists , hence access point saved
+          console.log(save);
+          console.log('access point saved');
+        })
       }
-    });
-    //response.render('order');
+      
 
+
+    });
   });
 });
 app.post('/nice', function (req, res) {
@@ -175,37 +197,63 @@ app.get('/accessList',function(req,res){  // home page showed to user as get req
 app.post('/lockerList', function (req, res) {
   //forward geocoding needs to be done
   // need to find the geocode of address and add the no. of lockers to previous numbers in it
-  geocoder.geocode(req.body.Lname, function(err, res) {
-  console.log(res);
-   var lat = res[0].latitude; // to get lattitude of address
-   var lon = res[0].longitude; // to get longitude of address
-   var str = req.body.Lname;// address of existing access point
-  var no = req.body.Nname1;// number of lockers to be added
-  var x= parseInt(no,10);// int of number
-  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
-  //now we will check in db if the access point already exists
-    var item = geo ({
-    address:str,
-    latt:lat,
-    lonn:lon,
-    lock:x
-  });
+//   geocoder.geocode(req.body.Lname, function(err, res) {
+//   console.log(res);
+//    var lat = res[0].latitude; // to get lattitude of address
+//    var lon = res[0].longitude; // to get longitude of address
+//    var str = req.body.Lname;// address of existing access point
+//   var no = req.body.Nname1;// number of lockers to be added
+//   var x= parseInt(no,10);// int of number
+//   console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+//   //now we will check in db if the access point already exists
+//     var item = new  geo ({
+//     address:str,
+//     latt:lat,
+//     lonn:lon,
+//     lock:x
+//   });
 
-   geo.findOne({
-      address:str
-    }).then(user=>{
-      if(user)
-      {
-        // access point already exists hence no. of lockers will be changed in db 
-        console.log('This access point exists, we will update the number of lockers');
+//       geo.find(item,function(err,final){
+//         if(err)
+//           console.log(err);
+      
+//         console.log("&&&&&&&");
+//       if(final){
+//         console.log(final);
+//         // access point already exists hence no. of lockers will be changed in db 
+//         console.log('This access point exists, we will update the number of lockers');
+//         final[0].lock = final[0].lock+x;
+//         final[0].save(function(err,saved){
+//           if(err)
+//             console.log(err);
+//           console.log(saved);
+
+
+//         })
+//         // now add the query no. of lockers to the existing no. of lockers
+//       }
+//       else{
+//         console.log('No such access point exists , hence no change in db will me made.');
+//       }
+//     });
+// });
+  console.log(req.body.Lname);
+ 
+  geo.find({
+    address : req.body.Lname
+  },function(err,final){
+    if(err)
+      console.log(err);
+      console.log(final);
+      if(final.length>0){
+        final[0].lock = final[0].lock+parseInt(req.body.Nname1,10);
+        final[0].save();
+        console.log("iteam updated");
       }
       else{
-        //No such access point exists , hence no change in db will me made.
-        console.log('No such access point exists , hence no change in db will me made.');
+        console.log("access point not exist");
       }
-    });
-
-});
+  });
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
