@@ -4,6 +4,9 @@ const express = require('express');
 const app = express();
 const Promise = require('bluebird');//bluebird is for promise
 
+var distance = require('google-distance');// for distance between two geo codes
+distance.apiKey = '54383ddcc3734cab8ce0e83f911be831';
+
 // for reading input
 var readline = require('readline-sync');
 
@@ -205,38 +208,7 @@ app.post('/lockerList', function (req, res) {
 //   var no = req.body.Nname1;// number of lockers to be added
 //   var x= parseInt(no,10);// int of number
 //   console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
-//   //now we will check in db if the access point already exists
-//     var item = new  geo ({
-//     address:str,
-//     latt:lat,
-//     lonn:lon,
-//     lock:x
-//   });
 
-//       geo.find(item,function(err,final){
-//         if(err)
-//           console.log(err);
-      
-//         console.log("&&&&&&&");
-//       if(final){
-//         console.log(final);
-//         // access point already exists hence no. of lockers will be changed in db 
-//         console.log('This access point exists, we will update the number of lockers');
-//         final[0].lock = final[0].lock+x;
-//         final[0].save(function(err,saved){
-//           if(err)
-//             console.log(err);
-//           console.log(saved);
-
-
-//         })
-//         // now add the query no. of lockers to the existing no. of lockers
-//       }
-//       else{
-//         console.log('No such access point exists , hence no change in db will me made.');
-//       }
-//     });
-// });
   console.log(req.body.Lname);
  
   geo.find({
@@ -259,6 +231,27 @@ app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
   //res.redirect('/');
 });
+
+// this is the function to find distance between two pairs of latitude and longitude
+var rad = function(x) {
+  return x * Math.PI / 180;
+};
+ var getDistance = function(p1lat, p1lng, p2lat, p2lng) {
+   // returns the distance in kilometer
+   var R = 6378137; // Earth’s mean radius in meter
+  var dLat = rad(p2lat - p1lat);
+  var dLong = rad(p2lng - p1lng);
+  // console.log(dLat);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(rad(p1lat)) * Math.cos(rad(p2lat)) *
+    Math.sin(dLong / 2) * Math.sin(dLong / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  d = d/1000;
+  return d;
+};
+
+
 app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address provided by user to geocode 
@@ -267,46 +260,32 @@ app.post('/search', function (req, res) { // code that will execute in backgroun
    var lat = res[0].latitude; // to get lattitude of address
    var lon = res[0].longitude; // to get longitude of address
    var str = req.body.fName; // to get the address of user (query address)
-   console.log('lat= '+lat+' lon= '+lon+' address= '+str);
+   var no = req.body.range;// to get the range 
+   var x= parseInt(no,10);
+   console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
     
    // search nearest geocodes from database and return addresses as result
-   /*
-    npm install google-distance
-   * for address
-   var distance = require('google-distance');
-
-   distance.get(
-  {
-    origin: 'San Francisco, CA',
-    destination: 'San Diego, CA'
-  },
-  function(err, data) {
-    if (err) return console.log(err);
-    console.log(data);
+   //find every object in db and compare the distance``
+  var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
+   geo.find({}).then(function(result){// finding function for database
+      var ct = 0;
+      
+      console.log(result.length); // no. of objects in database
+      for(var i = 0; i<result.length ;i++)
+      {
+          var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
+          console.log(ans); // showing every distance in kilometers
+          if(ans <= x)
+          {
+            // those addresses which are in the range as described by user
+            ct++;
+            console.log(result[i]);
+            arr.push(result[i]); // pushed all the results in the array for next webpage
+          }
+      }
    });
-   * for lattitude and longitude
-   distance.get(
-{
-  index: 1,
-  origin: '37.772886,-122.423771',
-  destination: '37.871601,-122.269104'
-},
-function(err, data) {
-  if (err) return console.log(err);
-  console.log(data);
-});
-   */
-   //find the geo code of query address, find nearest access points, return them
-   // reverse
-   geocoder.reverse(lat,lon , function(err, res) { //fName
-    console.log(res);
-  });
-
-  });
   
-  //geocoder.geocode('37.4396, -122.1864', function(err, res) {
-  //console.log(res);
-  //});
+});
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
