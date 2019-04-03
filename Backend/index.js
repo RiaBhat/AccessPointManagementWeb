@@ -184,18 +184,18 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
       }
       
 
-
     });
   });
+});
+app.get('/accessList',function(req,res){  // home page showed to user as get request
+  // that result show case or code to be shown to user
+  //res.redirect('/');
+  res.end();
 });
 app.post('/nice', function (req, res) {
   // this is what will be done when form of /addAP will be submitted
   let Aname = request.body.Aname;
   res.send(Aname);
-});
-app.get('/accessList',function(req,res){  // home page showed to user as get request
-	// that result show case or code to be shown to user
-  //res.redirect('/');
 });
 app.post('/lockerList', function (req, res) {
   //forward geocoding needs to be done
@@ -230,6 +230,7 @@ app.post('/lockerList', function (req, res) {
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
   //res.redirect('/');
+  res.end();
 });
 
 // this is the function to find distance between two pairs of latitude and longitude
@@ -251,8 +252,8 @@ var rad = function(x) {
   return d;
 };
 
-
-app.post('/search', function (req, res) { // code that will execute in background when address submitted
+var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
+app.post('/search', function (req, response) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address provided by user to geocode 
   geocoder.geocode(req.body.fName, function(err, res) {
@@ -262,11 +263,11 @@ app.post('/search', function (req, res) { // code that will execute in backgroun
    var str = req.body.fName; // to get the address of user (query address)
    var no = req.body.range;// to get the range 
    var x= parseInt(no,10);
-   console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
+   // console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
     
    // search nearest geocodes from database and return addresses as result
    //find every object in db and compare the distance``
-  var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
+  
    geo.find({}).then(function(result){// finding function for database
       var ct = 0;
       
@@ -279,18 +280,35 @@ app.post('/search', function (req, res) { // code that will execute in backgroun
           {
             // those addresses which are in the range as described by user
             ct++;
-            console.log(result[i]);
             arr.push(result[i]); // pushed all the results in the array for next webpage
           }
       }
-   });
-  
+      console.log("arr is filled: ", arr);
+      console.log("redirecting to /search...");
+      response.redirect("/search");
+  });
+         //res.send('/nearest',{response:arr});
+         //res.send(arr);
 });
+
 });
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
+  //res.send('arr');
   //res.redirect('/');
+  console.log("arr in /search route", arr);
+  res.render('nearestAccess', {arr:arr});
 });
+
+// for showing data searched to the user
+app.get('/nearest',function(req,res){
+  res.render('nearestAccess');
+});
+app.post('/nearest',function(req,res){
+  res.render('nearestAccess')
+});
+
+
 
 // to connect and save data to mongo db
 //Username and password of the user is lockers1 
