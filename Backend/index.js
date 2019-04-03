@@ -300,7 +300,7 @@ app.get('/search',function(req,res){  // home page showed to user as get request
   res.render('nearestAccess', {arr:arr});
 });
 
-// for showing data searched to the user
+// for showing data searched to the user 
 app.get('/nearest',function(req,res){
   res.render('nearestAccess');
 });
