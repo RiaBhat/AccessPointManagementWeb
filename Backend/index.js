@@ -4,8 +4,12 @@ const express = require('express');
 const app = express();
 const Promise = require('bluebird');//bluebird is for promise
 
+const v = require('node-input-validator'); // for validations of empty inputs(exceptions)
+
 var distance = require('google-distance');// for distance between two geo codes
 distance.apiKey = '54383ddcc3734cab8ce0e83f911be831';
+
+app.use('/static',express.static( __dirname + '/public')); //Serves resources from public folder
 
 // for reading input
 var readline = require('readline-sync');
@@ -130,63 +134,60 @@ app.post('/show', function (req, res) {
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
   // forward geocoding needs to be done
   //let Aname = request.body.Aname;
-  var str = req.body.Aname;
-  var no = req.body.Nname;
-  var x= parseInt(no,10);
-  geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
-  console.log(res);
-  console.log("********************");
-  var lat = res[0].latitude; // to get lattitude of address
-   var lon = res[0].longitude; // to get longitude of address
-  console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
-  console.log("%%%%%%%%%%%%%%%%");  
-  // object
-  //now we will check in db if the access point already exists
 
-   // geo.findOne({
-   //    latt:lat,
-   //    lann:lon
-   //  }).then(user=>{
-   //    if(user)
-   //    {
-   //      // access point already exists hence no change made in db
-   //      console.log('This access point exists, we will not add it again');
-   //    }
-   //    else{
-   //      //No such access point exists , hence access point saved
-   //      item.save()
-   //      .then(console.log('access point saved'));
-   //    }
-   //  });
-    geo.find({address:str
-    },function(err,final){
-      if(err)
-        console.log(err);
-      console.log(final);
-      if(final.length>0){
-        // access point already exists hence no change made in db
-        console.log('This access point exists, we will not add it again');
-      }
-      else{
-        var item = new geo ({
-        address:str,
-        latt:lat,
-        lonn:lon,
-        lock:x
-        });
-        item.save(function(err,save){
-          if(err)
-            console.log(err);
-            //No such access point exists , hence access point saved
-          console.log(save);
-          console.log('access point saved');
-        })
-      }
-      
-
+  // error handling for empty inputs
+  let validator = new v( req.body, {
+        Aname:'required',
+        Nname: 'required'
     });
-  });
+ 
+    validator.check().then(function (matched) {
+        if (!matched) {
+            res.status(422).send(validator.errors);
+        }
+        else
+        {
+          var str = req.body.Aname;
+          var no = req.body.Nname;
+          var x= parseInt(no,10);
+          geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
+          console.log(res);
+          console.log("********************");
+          var lat = res[0].latitude; // to get lattitude of address
+           var lon = res[0].longitude; // to get longitude of address
+          console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+          console.log("%%%%%%%%%%%%%%%%");
+          geo.find({address:str
+            },function(err,final){
+              if(err)
+                console.log(err);
+              console.log(final);
+              if(final.length>0){
+                // access point already exists hence no change made in db
+                console.log('This access point exists, we will not add it again');
+              }
+              else{
+                var item = new geo ({
+                address:str,
+                latt:lat,
+                lonn:lon,
+                lock:x
+                });
+                item.save(function(err,save){
+                  if(err)
+                    console.log(err);
+                    //No such access point exists , hence access point saved
+                  console.log(save);
+                  console.log('access point saved');
+                })
+              }
+            });
+        });
+      }
+      });
 });
+    
+
 app.get('/accessList',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
   //res.redirect('/');
@@ -208,10 +209,21 @@ app.post('/lockerList', function (req, res) {
 //   var no = req.body.Nname1;// number of lockers to be added
 //   var x= parseInt(no,10);// int of number
 //   console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+   
 
-  console.log(req.body.Lname);
+   // error handling for empty inputs
+   let validator = new v( req.body, {
+        Lname:'required',
+        Nname1: 'required'
+    });
  
-  geo.find({
+    validator.check().then(function (matched) {
+        if (!matched) {
+            res.status(422).send(validator.errors);
+        }
+        else
+        {
+          geo.find({
     address : req.body.Lname
   },function(err,final){
     if(err)
@@ -226,6 +238,9 @@ app.post('/lockerList', function (req, res) {
         console.log("access point not exist");
       }
   });
+        }
+    });
+
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
@@ -253,45 +268,62 @@ var rad = function(x) {
 };
 
 var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
-app.post('/search', function (req, response) { // code that will execute in background when address submitted
+app.post('/search', function (req, res) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address provided by user to geocode 
-  geocoder.geocode(req.body.fName, function(err, res) {
-  console.log(res);
-   var lat = res[0].latitude; // to get lattitude of address
-   var lon = res[0].longitude; // to get longitude of address
-   var str = req.body.fName; // to get the address of user (query address)
-   var no = req.body.range;// to get the range 
-   var x= parseInt(no,10);
-   // console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
-    
-   // search nearest geocodes from database and return addresses as result
-   //find every object in db and compare the distance``
-  
-   geo.find({}).then(function(result){// finding function for database
-      var ct = 0;
-      
-      console.log(result.length); // no. of objects in database
-      for(var i = 0; i<result.length ;i++)
-      {
-          var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
-          console.log(ans); // showing every distance in kilometers
-          if(ans <= x)
-          {
-            // those addresses which are in the range as described by user
-            ct++;
-            arr.push(result[i]); // pushed all the results in the array for next webpage
-          }
-      }
-      console.log("arr is filled: ", arr);
-      console.log("redirecting to /search...");
-      response.redirect("/search");
-  });
+
+  //for exception of empty input
+  let validator = new v( req.body, {
+        fName:'required',
+        range: 'required'
+    });
+ 
+    validator.check().then(function (matched) {
+        if (!matched) {
+            res.status(422).send(validator.errors);
+        }
+        else
+        {
+          geocoder.geocode(req.body.fName, function(err, res) {
+          console.log(res);
+           var lat = res[0].latitude; // to get lattitude of address
+           var lon = res[0].longitude; // to get longitude of address
+           var str = req.body.fName; // to get the address of user (query address)
+           var no = req.body.range;// to get the range 
+           var x= parseInt(no,10);
+           // console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
+            
+           // search nearest geocodes from database and return addresses as result
+           //find every object in db and compare the distance``
+          
+           geo.find({}).then(function(result){// finding function for database
+              var ct = 0;
+              
+              console.log(result.length); // no. of objects in database
+              for(var i = 0; i<result.length ;i++)
+              {
+                  var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
+                  console.log(ans); // showing every distance in kilometers
+                  if(ans <= x)
+                  {
+                    // those addresses which are in the range as described by user
+                    ct++;
+                    arr.push(result[i]); // pushed all the results in the array for next webpage
+                  }
+              }
+              console.log("arr is filled: ", arr);
+              console.log("redirecting to /search...");
+              response.redirect("/search");
+          });
          //res.send('/nearest',{response:arr});
          //res.send(arr);
-});
+         });
+        }
+    });
 
-});
+  });
+
+
 app.get('/search',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
   //res.send('arr');
