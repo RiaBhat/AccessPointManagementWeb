@@ -268,7 +268,7 @@ var rad = function(x) {
 };
 
 var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
-app.post('/search', function (req, res) { // code that will execute in background when address submitted
+app.post('/search', function (req, response) { // code that will execute in background when address submitted
   // backward geocoding needs to be done
   //convert address provided by user to geocode 
 
@@ -280,7 +280,7 @@ app.post('/search', function (req, res) { // code that will execute in backgroun
  
     validator.check().then(function (matched) {
         if (!matched) {
-            res.status(422).send(validator.errors);
+            response.status(422).send(validator.errors);
         }
         else
         {
