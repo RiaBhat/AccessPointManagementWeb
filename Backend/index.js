@@ -309,6 +309,7 @@ app.post('/search', function (req, response) { // code that will execute in back
                     // those addresses which are in the range as described by user
                     ct++;
                     arr.push(result[i]); // pushed all the results in the array for next webpage
+                    console.log(result[i]);
                   }
               }
               console.log("arr is filled: ", arr);
