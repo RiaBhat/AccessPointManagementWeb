@@ -1,3 +1,4 @@
+<!--HTML code to perform operations-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,39 +28,39 @@
  h2{
   color:#fff;
  }
+ img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width:10%;
+}
+</
 </style>
 <script>
-   /*int i=0;
+   
    function myFun1()
    {
-     i=1;
+     location.href = "file:///F:/ACMS/ACMSProject/Frontend/addAccessPoint.html";
    }
+   
    function myFun2()
    {
-    i=2;
-    $.ajax({
-        url: "http://localhost:3000/show",
-        type: "POST",
-        data: {like: 'yes'}, //send this to server
-        success: function(returned) {
-             console.log(returned); // here can get the return of route
-        },
-        error: function() {
-
-        }
-    });
-   }*/
+    location.href= "file:///F:/ACMS/ACMSProject/Frontend/findAcessPoint.html";
+  }
+   
  </script>
 </head>
 <body>
 <br><br><br>
-<form method='get'>
+
+<a href="https://www.amazon.in/"> <img src="amazon.jpg" alt="smile" title="AMAZON" /> </a>
+
 <br><br>
 <h2 align='center' > Welcome to Access Point Management Service</h1>
 <br><br><br>
-<button type='submit' id='a1' align= 'center' formaction='/add' > Add to database </button>
+<button type='submit' id='a1' align= 'center' onclick='myFun1()'> Add to database </button>
 <br>
-<button type='submit' id='a2' align= 'center' formaction='/show' > Choose from database </button>
-</form>
+<button type='submit' id='a2' align= 'center' onclick='myFun2()' > Choose from database </button>
+
 </body>
 </html>

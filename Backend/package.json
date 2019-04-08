@@ -12,9 +12,15 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
+    "ejs-lint": "^0.3.0",
     "express": "^4.16.4",
+    "google-distance": "^1.0.1",
+    "json": "^9.0.6",
     "mongoose": "^5.4.19",
-    "node-where": "^1.1.0"
+    "node-geocoder": "^3.22.0",
+    "node-input-validator": "^3.1.0",
+    "node-where": "^1.1.0",
+    "readline-sync": "^1.4.9"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
