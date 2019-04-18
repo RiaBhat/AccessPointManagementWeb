@@ -9,6 +9,8 @@ const v = require('node-input-validator'); // for validations of empty inputs(ex
 var distance = require('google-distance');// for distance between two geo codes
 distance.apiKey = '54383ddcc3734cab8ce0e83f911be831';
 
+var changeCase = require('change-case'); // used to change case of any string
+
 app.use('/static',express.static( __dirname + '/public')); //Serves resources from public folder
 
 // for reading input
@@ -36,10 +38,20 @@ db.once('open',function(){
     address:String,
     latt : Number,
     lonn : Number,
-    lock : Number
+    lock : Number,
+    state : String,
+    country : String,
+    mode : String,
+    name : String,
+    dimension : String,
+    weight : Number,
+    rate : Number,
+    type : String
   });
   // model
   var geo = mongoose.model('geo', codeSchema);
+  // model for India
+  //var geo1 = mongoose.model('india', codeSchema);
 
 //to connect to geocode api and find lat and lang
 var NodeGeocoder = require('node-geocoder');
@@ -132,12 +144,20 @@ app.post('/show', function (req, res) {
 
 // Now to get address from the /add page and save it as geocode in our database i.e. handling post requests from this page
 app.post('/accessList', function (req, res) { // code that will execute in background when address submitted
+  // for saving access points to db
   // forward geocoding needs to be done
-  //let Aname = request.body.Aname;
-
   // error handling for empty inputs
   let validator = new v( req.body, {
-        Aname:'required',
+        A1:'required',
+        A2:'required',
+        A3:'required',
+        A4:'required',
+        Amode:'required',
+        Atitle:'required',
+        Adim:'required',
+        Awt:'required',
+        Arate:'required',
+        Atype:'required',
         Nname: 'required'
     });
  
@@ -147,16 +167,41 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
         }
         else
         {
-          var str = req.body.Aname;
+          //address
+          var str1 = req.body.A1; //street
+          var str2 = req.body.A2; //city
+          var str3 = req.body.A3; //state
+          var str4 = req.body.A4; //country
+          var str = str1 + " " + str2 +" " +str3+" "+str4;
+          // getting country name in lower case to add to the collection of that country only in db
+          //var coll = changeCase.upperCase(str4);
+          //locker no.
           var no = req.body.Nname;
           var x= parseInt(no,10);
-          geocoder.geocode(req.body.Aname, function(err, res) { //req.body.Aname  '29 champs elysée paris'
+          //mode
+          var str5 = req.body.Amode;
+          //name
+          var str6 = req.body.Atitle;
+          //dimensions
+          var str7 = req.body.Adim;
+          //weight limit
+          var str8 = req.body.Awt;
+          var x1= parseInt(str8,10);
+          //rate
+          var str9= req.body.Arate;
+          var x2= parseInt(str9,10);
+          //type
+          var str10 = req.body.Atype;
+          //code for checking uniqueness and saving access point
+          console.log(str);
+          geocoder.geocode(str, function(err, res) { //req.body.Aname  '29 champs elysée paris'
           console.log(res);
           console.log("********************");
           var lat = res[0].latitude; // to get lattitude of address
            var lon = res[0].longitude; // to get longitude of address
-          console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
+          console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. '+x);
           console.log("%%%%%%%%%%%%%%%%");
+          // we will search for an existing entry of that access point in that country's collection
           geo.find({address:str
             },function(err,final){
               if(err)
@@ -171,7 +216,15 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
                 address:str,
                 latt:lat,
                 lonn:lon,
-                lock:x
+                lock:x,
+                state : str3,
+                country : str4,
+                mode : str5,
+                name : str6,
+                dimension : str7,
+                weight : x1,
+                rate : x2,
+                type : str10
                 });
                 item.save(function(err,save){
                   if(err)
@@ -179,8 +232,9 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
                     //No such access point exists , hence access point saved
                   console.log(save);
                   console.log('access point saved');
-                })
+                });
               }
+              res.redirect('/'); // redirects to main page
             });
         });
       }
@@ -190,8 +244,8 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
 
 app.get('/accessList',function(req,res){  // home page showed to user as get request
   // that result show case or code to be shown to user
-  //res.redirect('/');
-  res.end();
+  res.redirect('/');
+  //res.end();
 });
 app.post('/nice', function (req, res) {
   // this is what will be done when form of /addAP will be submitted
@@ -201,19 +255,12 @@ app.post('/nice', function (req, res) {
 app.post('/lockerList', function (req, res) {
   //forward geocoding needs to be done
   // need to find the geocode of address and add the no. of lockers to previous numbers in it
-//   geocoder.geocode(req.body.Lname, function(err, res) {
-//   console.log(res);
-//    var lat = res[0].latitude; // to get lattitude of address
-//    var lon = res[0].longitude; // to get longitude of address
-//    var str = req.body.Lname;// address of existing access point
-//   var no = req.body.Nname1;// number of lockers to be added
-//   var x= parseInt(no,10);// int of number
-//   console.log('lat : '+ lat+' long: '+lon+' address '+str + ' no. ' +no+' x '+x);
-   
-
    // error handling for empty inputs
    let validator = new v( req.body, {
-        Lname:'required',
+        A1:'required',
+        A2:'required',
+        A3:'required',
+        A4:'required',
         Nname1: 'required'
     });
  
@@ -223,24 +270,31 @@ app.post('/lockerList', function (req, res) {
         }
         else
         {
+          //address
+          var str1 = req.body.A1; //street
+          var str2 = req.body.A2; //city
+          var str3 = req.body.A3; //state
+          var str4 = req.body.A4; //country
+          var str = str1 + " " + str2 +" " +str3+" "+str4;
           geo.find({
-    address : req.body.Lname
-  },function(err,final){
-    if(err)
-      console.log(err);
-      console.log(final);
-      if(final.length>0){
-        final[0].lock = final[0].lock+parseInt(req.body.Nname1,10);
-        final[0].save();
-        console.log("iteam updated");
-      }
-      else{
-        console.log("access point not exist");
-      }
-  });
+          address : str
+        },function(err,final){
+          if(err)
+            console.log(err);
+            console.log(final);
+            if(final.length>0){
+              final[0].lock = final[0].lock+parseInt(req.body.Nname1,10);
+              final[0].save();
+              console.log("iteam updated");
+            }
+            else{
+              console.log("access point not exist");
+            }
+            res.redirect('/'); // redirects to main page
+          });
         }
-    });
 
+    });
 });
 app.get('/lockerList',function(req,res){
 	// that result show case or code to be shown to user
@@ -269,13 +323,22 @@ var rad = function(x) {
 
 var arr = []; // array to store relevent or needed data to show it to user in next web page in frontend
 app.post('/search', function (req, response) { // code that will execute in background when address submitted
+  // for searching nearby Access Points
   // backward geocoding needs to be done
   //convert address provided by user to geocode 
 
+  arr = [];
+
   //for exception of empty input
   let validator = new v( req.body, {
-        fName:'required',
-        range: 'required'
+        range: 'required',
+        A1 : 'required',
+        A2 : 'required',
+        A3 : 'required',
+        A4 : 'required',
+        Mode : 'required',
+        Type : 'required',
+        Partition : 'required'
     });
  
     validator.check().then(function (matched) {
@@ -284,11 +347,24 @@ app.post('/search', function (req, response) { // code that will execute in back
         }
         else
         {
-          geocoder.geocode(req.body.fName, function(err, res) {
+          //address
+          var str1 = req.body.A1;
+          var str2 = req.body.A2;
+          var str3 = req.body.A3;//state
+          var str4 = req.body.A4;//country
+          var str = str1 + " " + str2 +" " +str3+" "+str4; //address
+          // mode
+          var smode = req.body.Mode;
+          console.log('mode', smode);
+          //type
+          var stype = req.body.Type;
+          //partition
+          var spart = req.body.Partition;
+          //finding lat and lon
+          geocoder.geocode(str, function(err, res) { //req.body.fName
           console.log(res);
            var lat = res[0].latitude; // to get lattitude of address
            var lon = res[0].longitude; // to get longitude of address
-           var str = req.body.fName; // to get the address of user (query address)
            var no = req.body.range;// to get the range 
            var x= parseInt(no,10);
            // console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
@@ -307,9 +383,46 @@ app.post('/search', function (req, response) { // code that will execute in back
                   if(ans <= x)
                   {
                     // those addresses which are in the range as described by user
-                    ct++;
-                    arr.push(result[i]); // pushed all the results in the array for next webpage
-                    console.log(result[i]);
+                    console.log("Range "+ans+" "+x);
+                    if(result[i].mode == smode && result[i].type == stype)
+                    {
+                      console.log("mode and type "+result[i].mode+" "+smode);
+                      // those results which match user's prefrence
+                      if(spart=='None')
+                      {
+                        // those results which match the partition
+                        console.log('Partition is none');
+                        //hence all the results need to be shown
+                        ct++;
+                        arr.push(result[i]); // pushed all the results in the array for next webpage
+                        console.log(result[i]);
+                      }
+                      else if(spart=='Country')
+                      {
+                        console.log('Partition is Country');
+                        // results within country needs to be shown
+                        if(str4 == result[i].country)
+                        {
+                          ct++;
+                          arr.push(result[i]); // pushed all the results in the array for next webpage
+                          console.log(result[i]);
+                        }
+                      }
+                      else
+                      {
+                        console.log('Partition is State');
+                        //results within same state needs to be pushed
+                        if(str3 == result[i].state)
+                        {
+                          ct++;
+                          arr.push(result[i]); // pushed all the results in the array for next webpage
+                          console.log(result[i]);
+                        }
+                      }
+                    }
+                    // ct++;
+                    // arr.push(result[i]); // pushed all the results in the array for next webpage
+                    // console.log(result[i]);
                   }
               }
               console.log("arr is filled: ", arr);

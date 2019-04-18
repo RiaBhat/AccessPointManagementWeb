@@ -59,9 +59,13 @@
 <font size="6">
 
   <% for(var i=0; i<arr.length; ++i){ %>
-    <font size="4">ADDRESS </font> - <p><%= arr[i].address %> <br>
-    <font size="4"> NUMBER OF LOCKERS </font> - <p><%= arr[i].lock %> <br>
-    
+    <p><%= i %><br>
+    <font size="3">NAME </font> - <p><%= arr[i].name %> <br>
+    <font size="3">ADDRESS </font> - <p><%= arr[i].address %> <br>
+    <font size="3"> NUMBER OF LOCKERS </font> - <p><%= arr[i].lock %> <br>
+    <font size="3">DIMENSION LIMITS </font> - <p><%= arr[i].dimension %> <br>
+    <font size="3">WEIGHT LIMITS </font> - <p><%= arr[i].weight %> <br>
+    <font size="3">RATE </font> - <p><%= arr[i].rate %> <br><br><br>
   <%}%>
 
 </font>

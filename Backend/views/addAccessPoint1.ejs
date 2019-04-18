@@ -42,6 +42,9 @@ img {
 <BODY bgcolor='black'>
   <h1 align='center' style='color:white;'> Welcome! </h1>
   <h2 align='center' style='color:white;'> Please fill the details below to add an access point to the location </h2>
+
+  <!-- for access points -->
+
   <form style='color:white ' action='/accessList' method='post'>
   <!--This is the form starting where info for every acess point will be saved-->
   <fieldset  style=' padding:50px margin:50px '>
@@ -60,21 +63,62 @@ img {
   <br><br>
   Geocode Details:
   <br><br>
+  <!--We want to save a unique Access Point every time-->
   Add details of a new access point to be added to db else no change will be made to db
   <br><br>
-  Address of the Access Point [street no., city, state, Country ] use proper punctuations in the address-
+  <!--We want proper address of access point-->
+  Address of the Access Point-
   <br>
-
-  <input type='text' id='b1' name='Aname'>
+  <!--input type='text' id='b1' name='Aname'-->
+  <input type="text" name="A1" placeholder="street no.">
+  <input type="text" name="A2" placeholder="city">
+  <input type="text" name="A3" placeholder="state">
+  <input type="text" name="A4" placeholder="Country">
   <br><br>
+  <!--For Number of lockers-->
   No. of lockers-<br>
   <input type='Number' id='b3' name='Nname'>
+  <br>
+  <br>
+  <!--For mode of Access Point offlinr / online-->
+  Mode of Access Point - <br>
+  <input type='text' id='b4' name='Amode' placeholder="Online/Offline-">
+  <br>
+  <br>
+  <!--For name of Access Point-->
+  Name of Access Point - <br>
+  <input type='text' id='b5' name='Atitle' placeholder="Title of Access Point">
+  <br>
+  <br>
+  <!--For dimensions of Access Point-->
+  Dimensions of Access Point - <br>
+  <input type='text' id='b6' name='Adim' placeholder="L-B-H">
+  <br>
+  <br>
+  <!--For weight limit of Access Point-->
+  Weight Limit of Access Point - <br>
+  <input type='Number' id='b7' name='Awt' placeholder="in Kilograms-">
+  <br>
+  <br>
+  <!--For price of Access Point-->
+  Rate of Access Point - <br>
+  <input type='Number' id='b8' name='Arate' placeholder="Rupees per 12 hours-">
+  <br>
+  <br>
+  <!--For type of place(Residential/corporate) of Access Point-->
+  Type of address of Access Point - <br>
+  <input type='text' id='b9' name='Atype' placeholder="Residential/corporate-">
+  <br>
   <button align='center' name='point' type='submit' id='r4' formaction='/accessList' style='padding:10px; margin:20px; ' > Submit  </button>
 
 <br><br><br>
 <a href="https:https://www.amazon.com/primeinsider/tips/amazon-locker-qa.html"> <img id='c1' src="/static/addAccessPoint.jpg" alt="Access Point" title="AMAZON LOCKERS" /> </a>
   </fieldset>
   </form>
+
+  <!-- for lockers -->
+
+
   <form style='color:white ' action='/lockerList' method='post'>
   <!--For Lockers Database-->
   <fieldset id='F2' style=' display:none'>
@@ -85,11 +129,15 @@ img {
   <br><br>
   Address of the Access Point [street no., city, state, Country ] use proper punctuations in the address-
   <br>
-
-  <input type='text' id='b2' name='Lname'>
+  <!-- input for address -->
+  <!--input type='text' id='b2' name='Lname' placeholder='Address'-->
+  <input type="text" name="A1" placeholder="street no.">
+  <input type="text" name="A2" placeholder="city">
+  <input type="text" name="A3" placeholder="state">
+  <input type="text" name="A4" placeholder="Country">
   <br><br>
   Number of lockers added-<br>
-  <input type='number' id='b3' name='Nname1'>
+  <input type='number' id='b3' name='Nname1' placeholder="No. of extra lockers">
   <button align='center' name='loc' type='submit' id='r5' formaction='/lockerList' style='padding:10px; margin:20px; ' > Submit  </button>
 <br><br><br>
 <a href="https://www.amazon.com/primeinsider/tips/amazon-locker-qa.html"> <img id='c2' src="/static/addLocker.jpg" alt="Locker" title="AMAZON LOCKERS" /> </a>
