@@ -348,8 +348,8 @@ app.post('/search', function (req, response) { // code that will execute in back
         else
         {
           //address
-          var str1 = req.body.A1;
-          var str2 = req.body.A2;
+          var str1 = req.body.A1;//street
+          var str2 = req.body.A2;//city
           var str3 = req.body.A3;//state
           var str4 = req.body.A4;//country
           var str = str1 + " " + str2 +" " +str3+" "+str4; //address
@@ -430,7 +430,7 @@ app.post('/search', function (req, response) { // code that will execute in back
               response.redirect("/search");
           });
          //res.send('/nearest',{response:arr});
-         //res.send(arr);
+         res.send(arr);
          });
         }
     });
