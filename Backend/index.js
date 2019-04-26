@@ -430,7 +430,7 @@ app.post('/search', function (req, response) { // code that will execute in back
               response.redirect("/search");
           });
          //res.send('/nearest',{response:arr});
-         res.send(arr);
+         //res.send(arr);
          });
         }
     });
