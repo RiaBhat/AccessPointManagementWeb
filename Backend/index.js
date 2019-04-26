@@ -34,22 +34,7 @@ db.once('open',function(){
 // for saving to db
 // now we will save add, lat and lon to databse
   //schema
-  var codeSchema = new mongoose.Schema({
-    address:String,
-    latt : Number,
-    lonn : Number,
-    lock : Number,
-    state : String,
-    country : String,
-    mode : String,
-    name : String,
-    dimension : String,
-    weight : Number,
-    rate : Number,
-    type : String
-  });
-  // model
-  var geo = mongoose.model('geo', codeSchema);
+  const {geo}=require('./models/geo.js');
   // model for India
   //var geo1 = mongoose.model('india', codeSchema);
 
@@ -234,10 +219,13 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
                   console.log('access point saved');
                 });
               }
-              res.redirect('/'); // redirects to main page
+              
+             //res.end(); // redirects to main page
             });
+          //res.redirect('/'); 
         });
       }
+      res.redirect('/');
       });
 });
     
