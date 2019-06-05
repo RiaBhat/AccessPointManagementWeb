@@ -6,6 +6,7 @@ var codeSchema = new mongoose.Schema({
     latt : Number,
     lonn : Number,
     lock : Number,
+    city : String,
     state : String,
     country : String,
     mode : String,

@@ -202,6 +202,7 @@ app.post('/accessList', function (req, res) { // code that will execute in backg
                 latt:lat,
                 lonn:lon,
                 lock:x,
+                city:str2,
                 state : str3,
                 country : str4,
                 mode : str5,
@@ -320,7 +321,7 @@ app.post('/search', function (req, response) { // code that will execute in back
   //for exception of empty input
   let validator = new v( req.body, {
         range: 'required',
-        A1 : 'required',
+        //A1 : 'required', --> should be able to find results with city only
         A2 : 'required',
         A3 : 'required',
         A4 : 'required',
@@ -358,11 +359,17 @@ app.post('/search', function (req, response) { // code that will execute in back
            // console.log('lat= '+lat+' lon= '+lon+' address= '+str+' range '+x);
             
            // search nearest geocodes from database and return addresses as result
-           //find every object in db and compare the distance``
-          
-           geo.find({}).then(function(result){// finding function for database
+           //find every object in db with same city or state or country as demanded by user and compare the distance``
+
+           //for city
+           if(spart=='city')
+           {
+              console.log("city ");
+              geo.find({
+                city : str2
+              }).then(function(result){// finding function for database
               var ct = 0;
-              
+              console.log("Finding for "+str2)
               console.log(result.length); // no. of objects in database
               for(var i = 0; i<result.length ;i++)
               {
@@ -376,54 +383,179 @@ app.post('/search', function (req, response) { // code that will execute in back
                     {
                       console.log("mode and type "+result[i].mode+" "+smode);
                       // those results which match user's prefrence
-                      if(spart=='None')
-                      {
-                        // those results which match the partition
-                        console.log('Partition is none');
-                        //hence all the results need to be shown
                         ct++;
                         arr.push(result[i]); // pushed all the results in the array for next webpage
                         console.log(result[i]);
-                      }
-                      else if(spart=='Country')
-                      {
-                        console.log('Partition is Country');
-                        // results within country needs to be shown
-                        if(str4 == result[i].country)
-                        {
-                          ct++;
-                          arr.push(result[i]); // pushed all the results in the array for next webpage
-                          console.log(result[i]);
-                        }
-                      }
-                      else
-                      {
-                        console.log('Partition is State');
-                        //results within same state needs to be pushed
-                        if(str3 == result[i].state)
-                        {
-                          ct++;
-                          arr.push(result[i]); // pushed all the results in the array for next webpage
-                          console.log(result[i]);
-                        }
+                      
                       }
                     }
                     // ct++;
                     // arr.push(result[i]); // pushed all the results in the array for next webpage
                     // console.log(result[i]);
                   }
+                  console.log("arr is filled: ", arr);
+                  console.log("redirecting to /search...");
+                  response.redirect("/search");
               }
-              console.log("arr is filled: ", arr);
+
+              );
+              
+               //for state
+             }
+           if (spart=='state') 
+           {
+              console.log("state");
+              geo.find({
+                state : str3
+              }).then(function(result){// finding function for database
+              var ct = 0;
+              
+              console.log("Finding for "+str3)
+              console.log(result.length); // no. of objects in database
+              for(var i = 0; i<result.length ;i++)
+              {
+                  var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
+                  console.log(ans); // showing every distance in kilometers
+                  if(ans <= x)
+                  {
+                    // those addresses which are in the range as described by user
+                    console.log("Range "+ans+" "+x);
+                    if(result[i].mode == smode && result[i].type == stype)
+                    {
+                      console.log("mode and type "+result[i].mode+" "+smode);
+                      // those results which match user's prefrence
+                        ct++;
+                        arr.push(result[i]); // pushed all the results in the array for next webpage
+                        console.log(result[i]);
+                      
+                      }
+                    }
+                    // ct++;
+                    // arr.push(result[i]); // pushed all the results in the array for next webpage
+                    // console.log(result[i]);
+                  }
+                  console.log("arr is filled: ", arr);
+                  console.log("redirecting to /search...");
+                  response.redirect("/search");
+              });
+              
+            }
+            //for country
+           if(spart=='country')
+           {
+              console.log("Country");
+              geo.find({
+                country : str4
+              }).then(function(result){// finding function for database
+              var ct = 0;
+              
+              console.log("Finding for "+str4)
+              console.log(result.length); // no. of objects in database
+              for(var i = 0; i<result.length ;i++)
+              {
+                  var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
+                  console.log(ans); // showing every distance in kilometers
+                  if(ans <= x)
+                  {
+                    // those addresses which are in the range as described by user
+                    console.log("Range "+ans+" "+x);
+                    if(result[i].mode == smode && result[i].type == stype)
+                    {
+                      console.log("mode and type "+result[i].mode+" "+smode);
+                      // those results which match user's prefrence
+                        ct++;
+                        arr.push(result[i]); // pushed all the results in the array for next webpage
+                        console.log(result[i]);
+                      
+                      }
+                    }
+                    // ct++;
+                    // arr.push(result[i]); // pushed all the results in the array for next webpage
+                    // console.log(result[i]);
+                  }
+                  console.log("arr is filled: ", arr);
               console.log("redirecting to /search...");
               response.redirect("/search");
-          });
-         //res.send('/nearest',{response:arr});
-         //res.send(arr);
-         });
-        }
-    });
+              });
+              
+          }
 
-  });
+          }); // close geocoder
+
+        }//close else
+
+      });//close validator.check
+
+ });//close /search
+          
+          
+          // response.send('/nearest',{response:arr});
+          // response.send(arr);
+
+          //earlier code
+         //   geo.find({}).then(function(result){// finding function for database
+         //      var ct = 0;
+              
+         //      console.log(result.length); // no. of objects in database
+         //      for(var i = 0; i<result.length ;i++)
+         //      {
+         //          var ans = getDistance(lat,lon,result[i].latt,result[i].lonn); // finding distance between the query address and the db addresses
+         //          console.log(ans); // showing every distance in kilometers
+         //          if(ans <= x)
+         //          {
+         //            // those addresses which are in the range as described by user
+         //            console.log("Range "+ans+" "+x);
+         //            if(result[i].mode == smode && result[i].type == stype)
+         //            {
+         //              console.log("mode and type "+result[i].mode+" "+smode);
+         //              // those results which match user's prefrence
+         //              if(spart=='None')
+         //              {
+         //                // those results which match the partition
+         //                console.log('Partition is none');
+         //                //hence all the results need to be shown
+         //                ct++;
+         //                arr.push(result[i]); // pushed all the results in the array for next webpage
+         //                console.log(result[i]);
+         //              }
+         //              else if(spart=='Country')
+         //              {
+         //                console.log('Partition is Country');
+         //                // results within country needs to be shown
+         //                if(str4 == result[i].country)
+         //                {
+         //                  ct++;
+         //                  arr.push(result[i]); // pushed all the results in the array for next webpage
+         //                  console.log(result[i]);
+         //                }
+         //              }
+         //              else
+         //              {
+         //                console.log('Partition is State');
+         //                //results within same state needs to be pushed
+         //                if(str3 == result[i].state)
+         //                {
+         //                  ct++;
+         //                  arr.push(result[i]); // pushed all the results in the array for next webpage
+         //                  console.log(result[i]);
+         //                }
+         //              }
+         //            }
+         //            // ct++;
+         //            // arr.push(result[i]); // pushed all the results in the array for next webpage
+         //            // console.log(result[i]);
+         //          }
+         //      }
+         //      console.log("arr is filled: ", arr);
+         //      console.log("redirecting to /search...");
+         //      response.redirect("/search");
+         //  });
+         // res.send('/nearest',{response:arr});
+         // res.send(arr);
+               
+    
+
+  
 
 
 app.get('/search',function(req,res){  // home page showed to user as get request
