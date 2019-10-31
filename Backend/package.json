@@ -16,7 +16,7 @@
     "express": "^4.16.4",
     "google-distance": "^1.0.1",
     "json": "^9.0.6",
-    "mongoose": "^5.4.19",
+    "mongoose": "^5.7.5",
     "node-geocoder": "^3.22.0",
     "node-input-validator": "^3.1.0",
     "node-where": "^1.1.0",
